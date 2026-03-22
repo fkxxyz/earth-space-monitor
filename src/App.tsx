@@ -166,7 +166,7 @@ function App() {
                     stroke="#94a3b8"
                   />
                   <YAxis domain={[0, 9]} ticks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]} stroke="#94a3b8" />
-                  <Tooltip content={<CustomTooltip />} />
+                  <Tooltip content={<CustomTooltip />} isAnimationActive={false} animationDuration={0} />
                   <ReferenceLine y={5} stroke="#f59e0b" strokeDasharray="6 6" label="G1 門檻" />
                   <ReferenceLine y={7} stroke="#ef4444" strokeDasharray="6 6" label="G3 門檻" />
                   <Line
@@ -174,6 +174,7 @@ function App() {
                     dataKey="kp"
                     stroke="#8b5cf6"
                     strokeWidth={3}
+                    isAnimationActive={false}
                     dot={{ r: 3, fill: '#c4b5fd', strokeWidth: 0 }}
                     activeDot={{ r: 7, fill: '#f8fafc', stroke: '#8b5cf6', strokeWidth: 3 }}
                   />
