@@ -4,17 +4,17 @@ import { formatKpPoint, parseKpResponse } from './geomag'
 
 describe('parseKpResponse', () => {
   it('keeps the most recent seven days of 3-hour Kp data and sorts ascending', () => {
-    const rows = [['time_tag', 'Kp', 'a_running', 'station_count']]
+    const rows = []
     const start = new Date('2026-03-01T00:00:00.000Z')
 
     for (let index = 0; index < 72; index += 1) {
       const timestamp = new Date(start.getTime() + index * 3 * 60 * 60 * 1000)
-      rows.push([
-        timestamp.toISOString().replace('T', ' ').replace('Z', ''),
-        (index % 8).toFixed(2),
-        String(index),
-        '8',
-      ])
+      rows.push({
+        time_tag: timestamp.toISOString().replace('T', ' ').replace('Z', ''),
+        Kp: Number((index % 8).toFixed(2)),
+        a_running: index,
+        station_count: 8,
+      })
     }
 
     const points = parseKpResponse(rows)
@@ -27,10 +27,9 @@ describe('parseKpResponse', () => {
 
   it('maps NOAA storm levels and preserves supporting fields', () => {
     const points = parseKpResponse([
-      ['time_tag', 'Kp', 'a_running', 'station_count'],
-      ['2026-03-20 18:00:00.000', '5.67', '67', '8'],
-      ['2026-03-20 21:00:00.000', '6.67', '111', '8'],
-      ['2026-03-21 00:00:00.000', '7.00', '132', '8'],
+      { time_tag: '2026-03-20 18:00:00.000', Kp: 5.67, a_running: 67, station_count: 8 },
+      { time_tag: '2026-03-20 21:00:00.000', Kp: 6.67, a_running: 111, station_count: 8 },
+      { time_tag: '2026-03-21 00:00:00.000', Kp: 7.0, a_running: 132, station_count: 8 },
     ])
 
     expect(points.map((point) => point.level)).toEqual(['G1', 'G2', 'G3'])

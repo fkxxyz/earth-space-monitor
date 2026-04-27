@@ -4,8 +4,15 @@ import { getStormLevel, parseLatestKpPoint, type GeomagPoint } from '../lib/geom
 
 const NOAA_KP_URL = 'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json'
 
+type KpDataPoint = {
+  time_tag: string
+  Kp: number
+  a_running: number
+  station_count: number
+}
+
 export type MonitorOptions = {
-  fetchNoaaData?: () => Promise<string[][]>
+  fetchNoaaData?: () => Promise<KpDataPoint[]>
   dispatchAlert?: (point: GeomagPoint) => Promise<void>
   lastTriggeredTimestamp: string | null
   thresholdKp: number
@@ -17,13 +24,13 @@ export type MonitorResult = {
   reason: 'triggered' | 'below-threshold' | 'already-triggered'
 }
 
-export async function fetchNoaaData() {
+export async function fetchNoaaData(): Promise<KpDataPoint[]> {
   const response = await fetch(NOAA_KP_URL)
   if (!response.ok) {
     throw new Error(`NOAA API error: ${response.status}`)
   }
 
-  return (await response.json()) as string[][]
+  return (await response.json()) as KpDataPoint[]
 }
 
 export async function dispatchWebhook(point: GeomagPoint) {

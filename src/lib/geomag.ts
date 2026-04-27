@@ -6,7 +6,12 @@ export type GeomagPoint = {
   level: 'Quiet' | 'Active' | 'G1' | 'G2' | 'G3' | 'G4' | 'G5'
 }
 
-type KpRow = [string, string, string, string]
+type KpDataPoint = {
+  time_tag: string
+  Kp: number
+  a_running: number
+  station_count: number
+}
 
 const TAIPEI_FORMATTER = new Intl.DateTimeFormat('zh-TW', {
   timeZone: 'Asia/Taipei',
@@ -32,23 +37,21 @@ export function getStormLevel(kp: number): GeomagPoint['level'] {
   return 'Quiet'
 }
 
-export function parseKpResponse(response: string[][]): GeomagPoint[] {
-  const [, ...dataRows] = response as [string[], ...KpRow[]]
-
-  const parsed = dataRows
-    .map(([time_tag, Kp, a_running, station_count]) => ({
+export function parseKpResponse(response: KpDataPoint[]): GeomagPoint[] {
+  const parsed = response
+    .map(({ time_tag, Kp, a_running, station_count }) => ({
       timestamp: normalizeTimestamp(time_tag),
-      kp: Number.parseFloat(Kp),
-      aRunning: Number.parseInt(a_running, 10),
-      stationCount: Number.parseInt(station_count, 10),
-      level: getStormLevel(Number.parseFloat(Kp)),
+      kp: Number(Kp),
+      aRunning: Number(a_running),
+      stationCount: Number(station_count),
+      level: getStormLevel(Number(Kp)),
     }))
     .sort((left, right) => left.timestamp.localeCompare(right.timestamp))
 
   return parsed.slice(-56)
 }
 
-export function parseLatestKpPoint(response: string[][]): GeomagPoint | null {
+export function parseLatestKpPoint(response: KpDataPoint[]): GeomagPoint | null {
   const points = parseKpResponse(response)
   return points.at(-1) ?? null
 }

@@ -9,9 +9,8 @@ afterEach(() => {
 describe('checkGeomagStorm', () => {
   it('triggers webhook/script execution when the latest 3-hour Kp reaches G1', async () => {
     const fetchNoaaData = vi.fn().mockResolvedValue([
-      ['time_tag', 'Kp', 'a_running', 'station_count'],
-      ['2026-03-21 00:00:00.000', '4.67', '31', '8'],
-      ['2026-03-21 03:00:00.000', '5.33', '56', '8'],
+      { time_tag: '2026-03-21 00:00:00.000', Kp: 4.67, a_running: 31, station_count: 8 },
+      { time_tag: '2026-03-21 03:00:00.000', Kp: 5.33, a_running: 56, station_count: 8 },
     ])
     const dispatchAlert = vi.fn().mockResolvedValue(undefined)
 
@@ -36,8 +35,7 @@ describe('checkGeomagStorm', () => {
 
   it('does not trigger twice for the same Kp interval', async () => {
     const fetchNoaaData = vi.fn().mockResolvedValue([
-      ['time_tag', 'Kp', 'a_running', 'station_count'],
-      ['2026-03-21 03:00:00.000', '5.33', '56', '8'],
+      { time_tag: '2026-03-21 03:00:00.000', Kp: 5.33, a_running: 56, station_count: 8 },
     ])
     const dispatchAlert = vi.fn().mockResolvedValue(undefined)
 
